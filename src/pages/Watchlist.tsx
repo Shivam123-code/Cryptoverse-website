@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { getCoins, getExchanges } from '../services/api';
 import { Trash2, ExternalLink, AlertCircle } from 'lucide-react';
 
-const Watchlist: React.FC = () => {fhg
+const Watchlist: React.FC = () => {
   const [watchlistItems, setWatchlistItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
