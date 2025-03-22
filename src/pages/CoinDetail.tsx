@@ -31,7 +31,7 @@ const CoinDetail: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <div className="w-12 h-12 border-b-2 border-blue-500 rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -51,17 +51,17 @@ const CoinDetail: React.FC = () => {
   })) || [];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div className="px-4 py-8 mx-auto max-w-7xl">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
-            <div className="flex items-center space-x-4 mb-6">
+          <div className="p-6 bg-gray-900 border border-gray-800 rounded-lg">
+            <div className="flex items-center mb-6 space-x-4">
               <img src={coin.image?.large} alt={coin.name} className="w-16 h-16" />
               <div>
                 <h1 className="text-3xl font-bold">{coin.name}</h1>
                 <p className="text-gray-400 uppercase">{coin.symbol}</p>
               </div>
-              <div className="ml-auto flex items-center space-x-4">
+              <div className="flex items-center ml-auto space-x-4">
                 {priceChange && (
                   <div className="flex items-center space-x-2">
                     {priceChange > 0 ? (
@@ -98,7 +98,7 @@ const CoinDetail: React.FC = () => {
               </ResponsiveContainer>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
               <div>
                 <p className="text-sm text-gray-400">Market Cap Rank</p>
                 <p className="text-lg font-semibold">#{coin.market_cap_rank}</p>
@@ -126,8 +126,8 @@ const CoinDetail: React.FC = () => {
         </div>
 
         <div className="lg:col-span-1">
-          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
-            <h2 className="text-xl font-bold mb-4">Information</h2>
+          <div className="p-6 bg-gray-900 border border-gray-800 rounded-lg">
+            <h2 className="mb-4 text-xl font-bold">Information</h2>
             <div className="space-y-4">
               <div className="flex items-center space-x-2">
                 <Globe className="w-5 h-5 text-gray-400" />
@@ -169,10 +169,10 @@ const CoinDetail: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-gray-900 rounded-lg p-6 border border-gray-800 mt-6">
-            <h2 className="text-xl font-bold mb-4">Description</h2>
+          <div className="p-6 mt-6 bg-gray-900 border border-gray-800 rounded-lg">
+            <h2 className="mb-4 text-xl font-bold">Description</h2>
             <div
-              className="text-gray-400 prose prose-invert max-w-none"
+              className="prose text-gray-400 prose-invert max-w-none"
               dangerouslySetInnerHTML={{ __html: coin.description?.en || 'No description available.' }}
             />
           </div>
