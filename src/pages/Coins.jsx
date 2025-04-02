@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { getCoins } from '../services/api';
-import { Coin } from '../types';
 import { Link } from 'react-router-dom';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import { LineChart, Line, ResponsiveContainer } from 'recharts';
 
-const Coins: React.FC = () => {
-  const [coins, setCoins] = useState<Coin[]>([]);
+const Coins = () => {
+  const [coins, setCoins] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
 
