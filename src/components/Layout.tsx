@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { Search, Coins, BarChart3, Home, User, MessageSquare } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import AuthModal from '../components/AuthModal';
+import AuthModal from './AuthModal';
 
 const Layout = () => {
   const [searchQuery, setSearchQuery] = useState('');
