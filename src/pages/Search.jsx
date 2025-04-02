@@ -3,15 +3,15 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { searchAll } from '../services/api';
 import { TrendingUp, TrendingDown, ExternalLink, AlertCircle, RefreshCw, Star } from 'lucide-react';
 
-const Search: React.FC = () => {
+const Search = () => {
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q') || '';
-  const [results, setResults] = useState<{ coins: any[]; exchanges: any[] }>({
+  const [results, setResults] = useState({
     coins: [],
     exchanges: [],
   });
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
   const [retrying, setRetrying] = useState(false);
 
   const fetchResults = async () => {
