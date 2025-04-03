@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getCoin } from '../services/api';
+import { getCoin } from '../services/api.js';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { TrendingUp, TrendingDown, Globe, Github, Twitter } from 'lucide-react';
-import WatchlistButton from '../components/WatchlistButton';
+import WatchlistButton from '../components/WatchlistButton.jsx';
 
-const CoinDetail: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const [coin, setCoin] = useState<any>(null);
+const CoinDetail = () => {
+  const { id } = useParams();
+  const [coin, setCoin] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
@@ -45,7 +45,7 @@ const CoinDetail: React.FC = () => {
   }
 
   const priceChange = coin.market_data?.price_change_percentage_24h;
-  const priceData = coin.market_data?.sparkline_7d?.price?.map((price: number, index: number) => ({
+  const priceData = coin.market_data?.sparkline_7d?.price?.map((price, index) => ({
     price,
     index,
   })) || [];

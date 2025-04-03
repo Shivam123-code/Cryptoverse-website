@@ -4,11 +4,11 @@ import { getExchangeDetail } from '../services/api';
 import { ExternalLink, Globe, Twitter, Facebook, AlertCircle, RefreshCw } from 'lucide-react';
 import WatchlistButton from '../components/WatchlistButton';
 
-const ExchangeDetail: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const [exchange, setExchange] = useState<any>(null);
+const ExchangeDetail = () => {
+  const { id } = useParams();
+  const [exchange, setExchange] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
   const [retrying, setRetrying] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
@@ -177,7 +177,7 @@ const ExchangeDetail: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {exchange.tickers?.slice(0, 50).map((ticker: any, index: number) => (
+                {exchange.tickers?.slice(0, 50).map((ticker, index) => (
                   <tr key={index} className="border-b border-gray-700">
                     <td className="py-4 px-4">
                       <div className="flex items-center space-x-2">

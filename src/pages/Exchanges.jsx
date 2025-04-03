@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { getExchanges } from '../services/api';
-import { Exchange } from '../types';
 import { Link } from 'react-router-dom';
 import { ExternalLink } from 'lucide-react';
 
-const Exchanges: React.FC = () => {
-  const [exchanges, setExchanges] = useState<Exchange[]>([]);
+const Exchanges = () => {
+  const [exchanges, setExchanges] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchExchanges = async () => {
@@ -15,7 +14,6 @@ const Exchanges: React.FC = () => {
         const data = await getExchanges();
         setExchanges(data);
       } catch (err) {
-        // Handle error properly without trying to log the entire error object
         setError('Failed to fetch exchanges. Please try again later.');
       } finally {
         setLoading(false);

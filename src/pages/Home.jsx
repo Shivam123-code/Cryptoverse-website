@@ -2,7 +2,7 @@ import React from 'react';
 import { ArrowRight, TrendingUp, Globe, Shield } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const Home: React.FC = () => {
+const Home = () => {
   return (
     <div className="bg-black text-white">
       <div className="relative overflow-hidden">

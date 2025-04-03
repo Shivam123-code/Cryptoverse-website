@@ -1,45 +1,30 @@
-import React, { useState } from 'react';
-import { supabase } from '../lib/supabase';
+
+import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
-interface AuthModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
+const AuthModal = ({ isOpen, onClose }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const { login, register, error, loading, user } = useAuth();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
-
-    try {
-      if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-        });
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        if (error) throw error;
-      }
+  // 🛠 Close modal when authentication is successful
+  useEffect(() => {
+    if (user) {
+      setEmail('');
+      setPassword('');
       onClose();
-    } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message);
-      }
-    } finally {
-      setLoading(false);
+    }
+  }, [user, onClose]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (isSignUp) {
+      await register(email, password);
+    } else {
+      await login(email, password);
     }
   };
 
