@@ -1,15 +1,18 @@
-// In backend/routes/posts.js
 import express from 'express';
-import { pool } from '../db.js'; // Use named import
+import { pool } from '../db.js';
 import { authenticateUser } from '../middleware/auth.js';
-
 
 const router = express.Router();
 
-// Get all posts
+// ✅ Get all posts (with user info)
 router.get('/', async (req, res) => {
   try {
-    const { rows } = await pool.query('SELECT * FROM posts ORDER BY created_at DESC');
+    const { rows } = await pool.query(
+      `SELECT posts.*, users.name AS username  -- Change users.username to users.name
+       FROM posts 
+       LEFT JOIN users ON posts.user_id = users.id
+       ORDER BY posts.created_at DESC`
+    );
     res.json(rows);
   } catch (error) {
     console.error('Error fetching posts:', error);
@@ -17,9 +20,15 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Create a new post
-router.post('/', async (req, res) => {
-  const { title, content, user_id } = req.body;
+// ✅ Create a new post (Only logged-in users)
+router.post('/', authenticateUser, async (req, res) => {
+  const { title, content } = req.body;
+  const user_id = req.user.id;
+
+  if (!title || !content) {
+    return res.status(400).json({ message: 'Title and content are required' });
+  }
+
   try {
     const { rows } = await pool.query(
       'INSERT INTO posts (title, content, user_id) VALUES ($1, $2, $3) RETURNING *',
@@ -32,42 +41,45 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Get a single post by ID
-router.get('/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    const { rows } = await pool.query('SELECT * FROM posts WHERE id = $1', [id]);
-    if (rows.length === 0) return res.status(404).json({ message: 'Post not found' });
-    res.json(rows[0]);
-  } catch (error) {
-    console.error('Error fetching post:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
-// Update a post
-router.put('/:id', async (req, res) => {
+// ✅ Update a post (Only the owner can update)
+router.put('/:id', authenticateUser, async (req, res) => {
   const { id } = req.params;
   const { title, content } = req.body;
+  const user_id = req.user.id;
+
   try {
-    const { rows } = await pool.query(
+    const { rows } = await pool.query('SELECT user_id FROM posts WHERE id = $1', [id]);
+    if (rows.length === 0) return res.status(404).json({ message: 'Post not found' });
+
+    if (rows[0].user_id !== user_id) {
+      return res.status(403).json({ message: 'You are not authorized to edit this post' });
+    }
+
+    const updatedPost = await pool.query(
       'UPDATE posts SET title = $1, content = $2, updated_at = NOW() WHERE id = $3 RETURNING *',
       [title, content, id]
     );
-    if (rows.length === 0) return res.status(404).json({ message: 'Post not found' });
-    res.json(rows[0]);
+    res.json(updatedPost.rows[0]);
   } catch (error) {
     console.error('Error updating post:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-// Delete a post
-router.delete('/:id', async (req, res) => {
+// ✅ Delete a post (Only the owner can delete)
+router.delete('/:id', authenticateUser, async (req, res) => {
   const { id } = req.params;
+  const user_id = req.user.id;
+
   try {
-    const { rowCount } = await pool.query('DELETE FROM posts WHERE id = $1', [id]);
-    if (rowCount === 0) return res.status(404).json({ message: 'Post not found' });
+    const { rows } = await pool.query('SELECT user_id FROM posts WHERE id = $1', [id]);
+    if (rows.length === 0) return res.status(404).json({ message: 'Post not found' });
+
+    if (rows[0].user_id !== user_id) {
+      return res.status(403).json({ message: 'You are not authorized to delete this post' });
+    }
+
+    await pool.query('DELETE FROM posts WHERE id = $1', [id]);
     res.json({ message: 'Post deleted' });
   } catch (error) {
     console.error('Error deleting post:', error);

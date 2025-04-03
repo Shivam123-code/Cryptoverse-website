@@ -8,7 +8,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import pg from 'pg';
 import watchlistRoutes from './routes/watchlist.js';
-import postsRoutes from './routes/posts.js';  // Make sure the path is correct based on your directory structure
+import postsRoutes from './routes/posts.js'; 
 
 const { Pool } = pg;
 const app = express();
@@ -58,6 +58,7 @@ app.use(session({
 app.use('/api', watchlistRoutes);
 app.use('/api/posts', postsRoutes);
 app.use("/routes/watchlist", watchlistRoutes);
+
 
 // ✅ Register Route
 app.post('/register', async (req, res) => {
