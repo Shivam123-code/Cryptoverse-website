@@ -1,5 +1,4 @@
-import axios, { AxiosError } from 'axios';
-import { Exchange, Coin } from '../types';
+import axios from 'axios';
 
 const api = axios.create({
   baseURL: 'https://api.coingecko.com/api/v3',
@@ -9,7 +8,7 @@ const api = axios.create({
 // Enhanced error handling for CoinGecko API
 api.interceptors.response.use(
   (response) => response,
-  (error: AxiosError) => {
+  (error) => {
     if (error.response?.status === 429) {
       return Promise.reject(new Error('Rate limit exceeded. Please try again in a minute.'));
     }
@@ -23,37 +22,29 @@ api.interceptors.response.use(
   }
 );
 
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-const retryWithDelay = async <T>(
-  fn: () => Promise<T>,
-  retries = 3,
-  delayMs = 1000,
-  backoff = 2
-): Promise<T> => {
+const retryWithDelay = async (fn, retries = 3, delayMs = 1000, backoff = 2) => {
   try {
     return await fn();
   } catch (error) {
     if (retries === 0) throw error;
     
-    // If rate limited, wait longer
-    const waitTime = error instanceof Error && error.message.includes('rate limit')
-      ? delayMs * 2
-      : delayMs;
+    const waitTime = error.message.includes('rate limit') ? delayMs * 2 : delayMs;
     
     await delay(waitTime);
     return retryWithDelay(fn, retries - 1, waitTime * backoff, backoff);
   }
 };
 
-export const getExchanges = async (): Promise<Exchange[]> => {
+export const getExchanges = async () => {
   return retryWithDelay(async () => {
     const { data } = await api.get('/exchanges');
     return data;
   });
 };
 
-export const getCoins = async (page = 1): Promise<Coin[]> => {
+export const getCoins = async (page = 1) => {
   return retryWithDelay(async () => {
     const { data } = await api.get(
       `/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50&page=${page}&sparkline=true`
@@ -62,7 +53,7 @@ export const getCoins = async (page = 1): Promise<Coin[]> => {
   });
 };
 
-export const getCoin = async (id: string): Promise<any> => {
+export const getCoin = async (id) => {
   return retryWithDelay(async () => {
     const { data } = await api.get(
       `/coins/${id}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=true`
@@ -71,7 +62,7 @@ export const getCoin = async (id: string): Promise<any> => {
   });
 };
 
-export const getExchangeDetail = async (exchangeId: string): Promise<any> => {
+export const getExchangeDetail = async (exchangeId) => {
   return retryWithDelay(async () => {
     try {
       const [exchangeData, tickersData] = await Promise.all([
@@ -80,18 +71,12 @@ export const getExchangeDetail = async (exchangeId: string): Promise<any> => {
       ]);
       return { ...exchangeData, tickers: tickersData.tickers };
     } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(`Failed to fetch exchange details: ${error.message}`);
-      }
-      throw error;
+      throw new Error(`Failed to fetch exchange details: ${error.message}`);
     }
   });
 };
 
-export const searchAll = async (query: string): Promise<{
-  coins: any[];
-  exchanges: any[];
-}> => {
+export const searchAll = async (query) => {
   return retryWithDelay(async () => {
     try {
       const [searchData, allExchanges] = await Promise.all([
@@ -99,12 +84,12 @@ export const searchAll = async (query: string): Promise<{
         api.get('/exchanges').then(res => res.data)
       ]);
 
-      const filteredExchanges = allExchanges.filter((exchange: any) => 
+      const filteredExchanges = allExchanges.filter((exchange) => 
         exchange.name.toLowerCase().includes(query.toLowerCase()) ||
         exchange.id.toLowerCase().includes(query.toLowerCase())
       );
 
-      const formattedExchanges = filteredExchanges.map((exchange: any) => ({
+      const formattedExchanges = filteredExchanges.map((exchange) => ({
         id: exchange.id,
         name: exchange.name,
         large: exchange.image,

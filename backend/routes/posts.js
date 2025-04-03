@@ -1,35 +1,78 @@
 // In backend/routes/posts.js
 import express from 'express';
+import { pool } from '../db.js'; // Use named import
+import { authenticateUser } from '../middleware/auth.js';
+
 
 const router = express.Router();
 
-// Dummy posts data (replace with database logic later)
-let posts = [];
-
-// Define your CRUD operations...
-router.get('/', (req, res) => {
-  res.json(posts);
+// Get all posts
+router.get('/', async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM posts ORDER BY created_at DESC');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
 });
 
-router.post('/', (req, res) => {
-  const newPost = { id: Date.now().toString(), ...req.body };
-  posts.push(newPost);
-  res.status(201).json(newPost);
+// Create a new post
+router.post('/', async (req, res) => {
+  const { title, content, user_id } = req.body;
+  try {
+    const { rows } = await pool.query(
+      'INSERT INTO posts (title, content, user_id) VALUES ($1, $2, $3) RETURNING *',
+      [title, content, user_id]
+    );
+    res.status(201).json(rows[0]);
+  } catch (error) {
+    console.error('Error creating post:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
 });
 
-router.put('/:id', (req, res) => {
+// Get a single post by ID
+router.get('/:id', async (req, res) => {
   const { id } = req.params;
-  const index = posts.findIndex((post) => post.id === id);
-  if (index === -1) return res.status(404).json({ message: 'Post not found' });
-
-  posts[index] = { ...posts[index], ...req.body };
-  res.json(posts[index]);
+  try {
+    const { rows } = await pool.query('SELECT * FROM posts WHERE id = $1', [id]);
+    if (rows.length === 0) return res.status(404).json({ message: 'Post not found' });
+    res.json(rows[0]);
+  } catch (error) {
+    console.error('Error fetching post:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
 });
 
-router.delete('/:id', (req, res) => {
-  posts = posts.filter((post) => post.id !== req.params.id);
-  res.json({ message: 'Post deleted' });
+// Update a post
+router.put('/:id', async (req, res) => {
+  const { id } = req.params;
+  const { title, content } = req.body;
+  try {
+    const { rows } = await pool.query(
+      'UPDATE posts SET title = $1, content = $2, updated_at = NOW() WHERE id = $3 RETURNING *',
+      [title, content, id]
+    );
+    if (rows.length === 0) return res.status(404).json({ message: 'Post not found' });
+    res.json(rows[0]);
+  } catch (error) {
+    console.error('Error updating post:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
 });
 
-// Export the router for general usage
+// Delete a post
+router.delete('/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const { rowCount } = await pool.query('DELETE FROM posts WHERE id = $1', [id]);
+    if (rowCount === 0) return res.status(404).json({ message: 'Post not found' });
+    res.json({ message: 'Post deleted' });
+  } catch (error) {
+    console.error('Error deleting post:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 export default router;

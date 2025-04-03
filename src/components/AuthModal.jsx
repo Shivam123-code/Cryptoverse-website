@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -9,9 +8,10 @@ const AuthModal = ({ isOpen, onClose }) => {
   const [isSignUp, setIsSignUp] = useState(false);
   const { login, register, error, loading, user } = useAuth();
 
-  // 🛠 Close modal when authentication is successful
+  // ✅ Ensure modal closes when login/register is successful
   useEffect(() => {
     if (user) {
+      console.log("✅ User authenticated:", user);
       setEmail('');
       setPassword('');
       onClose();
@@ -20,11 +20,14 @@ const AuthModal = ({ isOpen, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (isSignUp) {
-      await register(email, password);
-    } else {
-      await login(email, password);
+    try {
+      if (isSignUp) {
+        await register(email, password);
+      } else {
+        await login(email, password);
+      }
+    } catch (err) {
+      console.error("❌ Auth error:", err.response?.data?.error || "Unknown error");
     }
   };
 
@@ -91,3 +94,4 @@ const AuthModal = ({ isOpen, onClose }) => {
 };
 
 export default AuthModal;
+s

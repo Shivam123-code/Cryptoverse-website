@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext, useEffect } from "react";
 
 const AuthContext = createContext({
@@ -18,113 +17,79 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // 🚀 Fetch user data using JWT
-  const fetchUser = async () => {
+  // ✅ Load user from local storage on startup
+  useEffect(() => {
+    const storedToken = localStorage.getItem('token');
+    if (storedToken) {
+      fetchUser(storedToken);
+    }
+  }, []);
+
+  const fetchUser = async (token) => {
     try {
-      setLoading(true);
-      const token = localStorage.getItem('token'); // ✅ Read token
-  
       const res = await fetch('http://localhost:5000/user', {
         method: 'GET',
-        headers: { Authorization: `Bearer ${token}` }, // ✅ Send token
+        headers: { Authorization: `Bearer ${token}` },
       });
-  
       const data = await res.json();
-      console.log("Session check:", res.status, data);
-  
-      if (res.ok) {
-        setUser(data);
-      } else {
-        setUser(null);
-      }
-    } catch (err) {
-      console.error("Session fetch error:", err);
-      setUser(null);
-    } finally {
-      setLoading(false);
+      if (res.ok) setUser(data.user);
+    } catch (error) {
+      console.error("❌ Failed to fetch user:", error);
     }
   };
-  
-  // 🚀 Login function
+
   const login = async (email, password) => {
+    setLoading(true);
+    setError(null);
     try {
-      setLoading(true);
-      setError(null);
-  
       const res = await fetch('http://localhost:5000/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({ email, password }),
       });
-  
+
       const data = await res.json();
-      console.log("Login response:", res.status, data); // Debugging
-  
+      console.log("🔹 Login response:", res.status, data);
+
       if (res.ok) {
-        localStorage.setItem('token', data.token); // ✅ Save token
-        setUser(data.user); // ✅ Store user info
+        localStorage.setItem('token', data.token);
+        setUser(data.user);
       } else {
         setError(data.error);
       }
     } catch (err) {
-      console.error("Login failed:", err);
+      console.error("❌ Login failed:", err);
       setError('Login failed');
     } finally {
       setLoading(false);
     }
   };
-  
 
-  // 🚀 Register function
   const register = async (email, password) => {
+    setLoading(true);
+    setError(null);
     try {
-      setLoading(true);
-      setError(null);
-  
       const res = await fetch('http://localhost:5000/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({ email, password }),
       });
-  
+
       const data = await res.json();
-      console.log("Register response:", res.status, data); // Debugging
-  
-      if (res.ok) {
-        setUser(data.user); // ✅ Store user info
-      } else {
-        setError(data.error);
-      }
+      if (res.ok) setUser(data.user);
+      else setError(data.error);
     } catch (err) {
-      console.error("Registration error:", err);
+      console.error("❌ Registration error:", err);
       setError('Registration failed');
     } finally {
       setLoading(false);
     }
   };
-  
-
-  // 🚀 Logout function
-  const logout = () => {
-    localStorage.removeItem('token'); // ✅ Remove token
-    setUser(null);
-  };
-  
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        error,
-        login,
-        register,
-        logout,
-        isAdmin: user?.role === "admin",
-      }}
-    >
+    <AuthContext.Provider value={{ user, loading, error, login, register, logout: () => setUser(null), isAdmin: user?.role === "admin" }}>
       {children}
     </AuthContext.Provider>
   );

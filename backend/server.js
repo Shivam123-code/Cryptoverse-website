@@ -23,6 +23,7 @@ app.use(cors({
 }));
 
 app.use(express.json());
+
 app.use(cookieParser()); 
 
 // 🛠 PostgreSQL Database Connection
@@ -56,6 +57,7 @@ app.use(session({
 // 🛠 API routes
 app.use('/api', watchlistRoutes);
 app.use('/api/posts', postsRoutes);
+app.use("/routes/watchlist", watchlistRoutes);
 
 // ✅ Register Route
 app.post('/register', async (req, res) => {
@@ -116,14 +118,24 @@ app.post('/login', async (req, res) => {
 
     console.log("✅ JWT Token Generated:", token);
 
-    // 🛠 FIX: Ensure token & user data are included in the response
+    // ✅ Set cookie for session-based authentication
+    res.cookie('token', token, {
+      httpOnly: true, // Prevent access via JavaScript
+      secure: false,  // Set to true in production with HTTPS
+      sameSite: 'lax'
+    });
+
     res.json({ token, user: { id: user.id, email: user.email } });
 
   } catch (error) {
     console.error("❌ Login failed:", error);
     res.status(500).json({ error: 'Server error' });
   }
+ 
 });
+
+    
+
 
 // ✅ Middleware to Verify JWT
 const authenticateToken = (req, res, next) => {

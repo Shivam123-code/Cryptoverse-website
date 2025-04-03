@@ -1,6 +1,7 @@
 import express from 'express';
-import pool from '../db.js'; // Ensure the file extension is included
+import { pool } from '../db.js'; 
 import { authenticateUser } from '../middleware/auth.js';
+
 
 const router = express.Router();
 
