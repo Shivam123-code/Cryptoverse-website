@@ -26,7 +26,10 @@ router.get('/watchlist', authenticateUser, async (req, res) => {
 router.post('/watchlist', authenticateUser, async (req, res) => {
     try {
         const { userId } = req.user;
-        const { itemId, itemType } = req.body;
+        const { item_id, item_type } = req.body;
+if (!item_id || !item_type) {
+  return res.status(400).json({ message: 'Missing item_id or item_type' });
+}
 
         const exists = await pool.query(
             'SELECT * FROM watchlist WHERE user_id = $1 AND item_id = $2',

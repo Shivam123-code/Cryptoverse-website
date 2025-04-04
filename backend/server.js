@@ -44,11 +44,11 @@ app.use(session({
     pool: pool,  // Use your PostgreSQL connection pool
     tableName: 'sessions' // Store sessions in PostgreSQL
   }),
-  secret: 'your-secret-key', // Change this to a strong secret
+  secret: '6b39b8c62b74e7187a07c0d857c07fb9fd4299442dd78ce29c2eb764d32a8ffdfe98435809c9d92a2557e723c4da262aa95c4e163a10a628aae967872cf72dee',
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: false, // Set to true in production with HTTPS
+    secure: false, 
     httpOnly: true,
     sameSite: 'lax'
   }

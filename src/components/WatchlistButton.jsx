@@ -6,9 +6,17 @@ const WatchlistButton = ({ itemId, itemType, onAuthRequired }) => {
 
   useEffect(() => {
     const checkWatchlist = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        onAuthRequired?.(); // Trigger login modal if passed
+        return;
+      }
+
       try {
         const response = await axios.get('http://localhost:5000/api/watchlist', {
-          withCredentials: true, // Ensures cookies (session) are sent
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
         const watchlistItems = response.data;
         setIsInWatchlist(watchlistItems.some(item => item.item_id === itemId));
@@ -21,32 +29,49 @@ const WatchlistButton = ({ itemId, itemType, onAuthRequired }) => {
   }, [itemId]);
 
   const handleToggleWatchlist = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      onAuthRequired?.();
+      return;
+    }
+
     try {
       if (isInWatchlist) {
         await axios.delete(`http://localhost:5000/api/watchlist/${itemId}`, {
           withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
         setIsInWatchlist(false);
       } else {
         await axios.post(
           'http://localhost:5000/api/watchlist',
-          { itemId, itemType },
-          { withCredentials: true }
+          { item_id: itemId, item_type: itemType },
+          {withCredentials: true },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
         setIsInWatchlist(true);
       }
-    } catch (error) {
+    }catch (error) {
+      console.error('Error toggling watchlist:', error.response?.data || error.message || error);
       if (error.response?.status === 401) {
-        onAuthRequired(); // Trigger authentication modal if not logged in
+        onAuthRequired?.(); // Optional chaining
       }
-      console.error('Error toggling watchlist:', error);
     }
+    
   };
 
   return (
     <button
       onClick={handleToggleWatchlist}
-      className={`px-4 py-2 rounded ${isInWatchlist ? 'bg-red-500 text-white' : 'bg-blue-500 text-white'}`}
+      className={`px-4 py-2 rounded ${
+        isInWatchlist ? 'bg-red-500' : 'bg-blue-500'
+      } text-white`}
     >
       {isInWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'}
     </button>
