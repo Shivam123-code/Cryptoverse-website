@@ -19,13 +19,12 @@ export const authenticateToken = (req, res, next) => {
 };
 
 // Middleware to check session authentication
-export const authenticateUser = (req, res, next) => {
-  console.log("Session Data:", req.session);
-
-  if (!req.session.user) {
-    return res.status(401).json({ error: 'Not authenticated' });
-  }
-
-  req.user = req.session.user;
-  next();
-};
+ export const authenticateUser = (req, res, next) => {
+    if (!req.session || !req.session.user) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+    req.user = req.session.user; // ✅ Attach user to request
+    next();
+  };
+  
+  

@@ -9,15 +9,27 @@ export const getPosts = async () => {
   return response.json();
 };
 
-export const createPost = async (post) => {
-  const response = await fetch(API_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify(post),
-  });
-  return response.json();
+export const createPost = async (postData) => {
+  try {
+    const response = await fetch('http://localhost:5000/api/posts', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include', // ✅ Ensures session cookies are sent
+      body: JSON.stringify(postData),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error creating post:', error);
+  }
 };
+
 
 export const getPost = async (id) => {
   const response = await fetch(`${API_URL}/${id}`, {

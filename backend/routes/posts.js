@@ -7,18 +7,19 @@ const router = express.Router();
 // ✅ Get all posts (with user info)
 router.get('/', async (req, res) => {
   try {
-    const { rows } = await pool.query(
-      `SELECT posts.*, users.name AS username  -- Change users.username to users.name
-       FROM posts 
-       LEFT JOIN users ON posts.user_id = users.id
-       ORDER BY posts.created_at DESC`
-    );
+    const { rows } = await pool.query('SELECT * FROM posts ORDER BY created_at DESC');
+
+    if (!rows || rows.length === 0) {
+      return res.json([]); // ✅ Return an empty array instead of undefined
+    }
+
     res.json(rows);
   } catch (error) {
     console.error('Error fetching posts:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
+
 
 // ✅ Create a new post (Only logged-in users)
 router.post('/', authenticateUser, async (req, res) => {

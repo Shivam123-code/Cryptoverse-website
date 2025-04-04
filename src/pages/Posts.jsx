@@ -1,91 +1,90 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext.jsx";
-import { MessageSquare, Plus, Trash2, AlertCircle, Loader2, Edit } from "lucide-react";
-import { getPosts, createPost, updatePost, deletePost } from "../services/posts.js";
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { getPosts, createPost, updatePost, deletePost } from '../services/posts';
+import { useAuth } from '../context/AuthContext';
+import { MessageSquare, Plus, Trash2, Pencil, AlertCircle, Loader2 } from 'lucide-react';
 
 const Posts = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [newPost, setNewPost] = useState({ title: "", content: "" });
-  const [isCreating, setIsCreating] = useState(false);
-  const [editingPost, setEditingPost] = useState(null);
+  const [newPost, setNewPost] = useState({ title: '', content: '' });
+  const [editingPostId, setEditingPostId] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (!user) {
+      navigate('/');
+      return;
+    }
     fetchPosts();
-  }, []);
+  }, [user, navigate]);
 
   const fetchPosts = async () => {
     try {
-      setError(null);
       setLoading(true);
       const data = await getPosts();
-      setPosts(data);
+      setPosts(data || []);
     } catch (err) {
-      console.error("Error fetching posts:", err);
-      setError("Failed to load posts. Please try again later.");
+      console.error('Error fetching posts:', err);
+      setError('Failed to load posts. Please try again later.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCreateOrUpdatePost = async (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    if (!user) {
-      setError("You must be logged in to create or edit posts.");
-      return;
-    }
+
     if (!newPost.title.trim() || !newPost.content.trim()) {
-      setError("Title and content are required.");
+      setError('Title and content are required.');
       return;
     }
 
+    setIsSaving(true);
     try {
-      setError(null);
-      setIsCreating(true);
-
-      if (editingPost) {
-        const updatedPost = await updatePost(editingPost.id, newPost);
-        setPosts((prev) => prev.map((post) => (post.id === editingPost.id ? updatedPost : post)));
-        setEditingPost(null);
+      let savedPost;
+      if (editingPostId) {
+        savedPost = await updatePost(editingPostId, newPost);
+        setPosts(posts.map(p => (p.id === editingPostId ? savedPost : p)));
       } else {
-        const post = await createPost({ ...newPost, user_id: user.id });
-        setPosts((prev) => [post, ...prev]);
+        savedPost = await createPost({
+          ...newPost,
+          user_id: user.id,
+          created_at: new Date().toISOString()
+        });
+        setPosts([savedPost, ...posts]);
       }
 
-      setNewPost({ title: "", content: "" });
+      setNewPost({ title: '', content: '' });
+      setEditingPostId(null);
       setShowForm(false);
+      setError(null);
     } catch (err) {
-      console.error("Error saving post:", err);
-      setError("Failed to save post. Please try again.");
+      console.error('Error saving post:', err);
+      setError('Failed to save post.');
     } finally {
-      setIsCreating(false);
+      setIsSaving(false);
     }
   };
 
-  const handleEditPost = (post) => {
-    setEditingPost(post);
+  const handleDelete = async (id) => {
+    try {
+      await deletePost(id);
+      setPosts(posts.filter(p => p.id !== id));
+    } catch (err) {
+      console.error('Error deleting post:', err);
+      setError('Failed to delete post.');
+    }
+  };
+
+  const handleEdit = (post) => {
+    setEditingPostId(post.id);
     setNewPost({ title: post.title, content: post.content });
     setShowForm(true);
-  };
-
-  const handleDeletePost = async (id) => {
-    if (!user) {
-      setError("You must be logged in to delete a post.");
-      return;
-    }
-    try {
-      setError(null);
-      await deletePost(id);
-      setPosts((prev) => prev.filter((post) => post.id !== id));
-    } catch (err) {
-      console.error("Error deleting post:", err);
-      setError("Failed to delete post. Please try again.");
-    }
   };
 
   if (loading) {
@@ -100,19 +99,18 @@ const Posts = () => {
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Community Posts</h1>
-        {user && (
-          <button
-            onClick={() => {
-              setShowForm(!showForm);
-              setNewPost({ title: "", content: "" });
-              setEditingPost(null);
-            }}
-            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <Plus className="w-5 h-5" />
-            <span>{editingPost ? "Edit Post" : "New Post"}</span>
-          </button>
-        )}
+        <button
+          onClick={() => {
+            setShowForm(true);
+            setNewPost({ title: '', content: '' });
+            setEditingPostId(null);
+            setError(null);
+          }}
+          className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          <Plus className="w-5 h-5" />
+          <span>New Post</span>
+        </button>
       </div>
 
       {error && (
@@ -122,62 +120,102 @@ const Posts = () => {
         </div>
       )}
 
-      {showForm && user && (
+      {showForm && (
         <div className="mb-8 bg-gray-900 rounded-lg p-6 border border-gray-800">
-          <h2 className="text-xl font-bold mb-4">{editingPost ? "Edit Post" : "Create New Post"}</h2>
-          <form onSubmit={handleCreateOrUpdatePost} className="space-y-4">
+          <h2 className="text-xl font-bold mb-4">
+            {editingPostId ? 'Edit Post' : 'Create New Post'}
+          </h2>
+          <form onSubmit={handleFormSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">Title</label>
+              <label htmlFor="title" className="block text-sm font-medium text-gray-400 mb-1">
+                Title
+              </label>
               <input
                 type="text"
+                id="title"
                 value={newPost.title}
                 onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
                 className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white"
-                required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">Content</label>
+              <label htmlFor="content" className="block text-sm font-medium text-gray-400 mb-1">
+                Content
+              </label>
               <textarea
+                id="content"
                 value={newPost.content}
                 onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
                 rows={4}
                 className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white"
-                required
               />
             </div>
             <div className="flex justify-end space-x-4">
-              <button type="button" onClick={() => setShowForm(false)} className="px-4 py-2 bg-gray-800 text-white rounded-lg">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowForm(false);
+                  setNewPost({ title: '', content: '' });
+                  setEditingPostId(null);
+                }}
+                className="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700"
+              >
                 Cancel
               </button>
-              <button type="submit" disabled={isCreating} className="px-4 py-2 bg-blue-600 text-white rounded-lg">
-                {isCreating ? "Saving..." : editingPost ? "Update Post" : "Create Post"}
+              <button
+                type="submit"
+                disabled={isSaving}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center space-x-2"
+              >
+                {isSaving && <Loader2 className="w-4 h-4 animate-spin" />}
+                <span>{editingPostId ? 'Update' : 'Create'}</span>
               </button>
             </div>
           </form>
         </div>
       )}
 
-      <div className="space-y-6">
-        {posts.map((post) => (
-          <div key={post.id} className="bg-gray-900 rounded-lg p-6 border border-gray-800">
-            <div className="flex justify-between items-start">
-              <h3 className="text-xl font-bold">{post.title}</h3>
-              {user && post.user_id === user.id && (
-                <div className="flex space-x-2">
-                  <button onClick={() => handleEditPost(post)} className="text-blue-500">
-                    <Edit />
-                  </button>
-                  <button onClick={() => handleDeletePost(post.id)} className="text-red-500">
-                    <Trash2 />
-                  </button>
+      {posts.length === 0 ? (
+        <div className="text-center py-12 bg-gray-900 rounded-lg border border-gray-800">
+          <MessageSquare className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+          <h3 className="text-xl font-medium text-gray-400">No posts yet</h3>
+          <p className="text-gray-500 mt-2">Be the first to share something!</p>
+        </div>
+      ) : (
+        <div className="space-y-6">
+          {posts.filter(Boolean).map((post) => (
+            post?.title && (
+              <div key={post.id} className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+                <div className="flex justify-between items-start">
+                  <h3 className="text-xl font-bold">{post.title}</h3>
+                  {user && post.user_id === user.id && (
+                    <div className="space-x-2">
+                      <button
+                        onClick={() => handleEdit(post)}
+                        className="text-blue-400 hover:text-blue-600"
+                        title="Edit"
+                      >
+                        <Pencil className="w-5 h-5" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(post.id)}
+                        className="text-red-400 hover:text-red-600"
+                        title="Delete"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-            <p className="text-gray-400 mt-2">{post.content}</p>
-          </div>
-        ))}
-      </div>
+                <p className="text-gray-400 mt-2 whitespace-pre-line">{post.content}</p>
+                <div className="text-sm text-gray-500 mt-4">
+                  Posted on {post.created_at ? new Date(post.created_at).toLocaleDateString() : 'Unknown'}
+                </div>
+              </div>
+            )
+          ))}
+        </div>
+      )}
     </div>
   );
 };
