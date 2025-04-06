@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // ✅ Load user from local storage on startup
+  // ✅ Load user from local storage 
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
     if (storedToken) {
