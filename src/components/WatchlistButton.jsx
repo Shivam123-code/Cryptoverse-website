@@ -50,7 +50,7 @@ const WatchlistButton = ({ itemId, itemType, onAuthRequired }) => {
         });
         setIsInWatchlist(false);
       } else {
-        // Add to watchlist
+        
         await axios.post(
           'http://localhost:5000/api/watchlist',
           { itemId, itemType },
