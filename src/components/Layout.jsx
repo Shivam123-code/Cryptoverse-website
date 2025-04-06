@@ -102,7 +102,7 @@ const Layout = () => {
       <footer className="bg-gray-900 border-t border-gray-800 py-8">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center text-gray-400">
-            <p>© 2024 CryptoVerse. All rights reserved.</p>
+            <p>© 2025 CryptoVerse. All rights reserved.</p>
           </div>
         </div>
       </footer>

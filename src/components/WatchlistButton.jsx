@@ -8,7 +8,7 @@ const WatchlistButton = ({ itemId, itemType, onAuthRequired }) => {
     const checkWatchlist = async () => {
       const token = localStorage.getItem('token');
       if (!token) {
-        onAuthRequired?.(); // Trigger login modal if passed
+        onAuthRequired?.(); // Trigger login modal if available
         return;
       }
 
@@ -18,37 +18,42 @@ const WatchlistButton = ({ itemId, itemType, onAuthRequired }) => {
             Authorization: `Bearer ${token}`,
           },
         });
+
         const watchlistItems = response.data;
-        setIsInWatchlist(watchlistItems.some(item => item.item_id === itemId));
+        const exists = watchlistItems.some(item => item.item_id === itemId);
+        setIsInWatchlist(exists);
       } catch (error) {
-        console.error('Error checking watchlist:', error);
+        console.error('Error checking watchlist:', error.response?.data || error.message);
+        if (error.response?.status === 401) {
+          onAuthRequired?.();
+        }
       }
     };
 
     checkWatchlist();
-  }, [itemId]);
+  }, [itemId, onAuthRequired]);
 
   const handleToggleWatchlist = async () => {
     const token = localStorage.getItem('token');
     if (!token) {
-      onAuthRequired?.();
+      onAuthRequired?.(); // If token missing, trigger login
       return;
     }
 
     try {
       if (isInWatchlist) {
+        // Remove from watchlist
         await axios.delete(`http://localhost:5000/api/watchlist/${itemId}`, {
-          withCredentials: true,
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
         setIsInWatchlist(false);
       } else {
+        // Add to watchlist
         await axios.post(
           'http://localhost:5000/api/watchlist',
-          { item_id: itemId, item_type: itemType },
-          {withCredentials: true },
+          { itemId, itemType },
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -57,13 +62,12 @@ const WatchlistButton = ({ itemId, itemType, onAuthRequired }) => {
         );
         setIsInWatchlist(true);
       }
-    }catch (error) {
-      console.error('Error toggling watchlist:', error.response?.data || error.message || error);
+    } catch (error) {
+      console.error('Error toggling watchlist:', error.response?.data || error.message);
       if (error.response?.status === 401) {
-        onAuthRequired?.(); // Optional chaining
+        onAuthRequired?.(); // Trigger login if not authorized
       }
     }
-    
   };
 
   return (
@@ -71,7 +75,7 @@ const WatchlistButton = ({ itemId, itemType, onAuthRequired }) => {
       onClick={handleToggleWatchlist}
       className={`px-4 py-2 rounded ${
         isInWatchlist ? 'bg-red-500' : 'bg-blue-500'
-      } text-white`}
+      } text-white transition duration-200`}
     >
       {isInWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'}
     </button>
