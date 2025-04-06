@@ -65,7 +65,7 @@ const WatchlistButton = ({ itemId, itemType, onAuthRequired }) => {
     } catch (error) {
       console.error('Error toggling watchlist:', error.response?.data || error.message);
       if (error.response?.status === 401) {
-        onAuthRequired?.(); // Trigger login if not authorized
+        onAuthRequired?.(); 
       }
     }
   };
