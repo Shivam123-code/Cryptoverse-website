@@ -1,6 +1,6 @@
 import express from 'express';
 import { authenticateUser } from '../middleware/auth.js';
-import pool from '../db.js'; // Adjust path if needed
+import { pool } from '../db.js';
 
 const router = express.Router();
 

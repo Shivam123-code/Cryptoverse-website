@@ -8,7 +8,9 @@ const Layout = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const navigate = useNavigate();
-  const { user, logout } = useAuth(); // Use authentication context
+  //const { user, logout } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
+ // Use authentication context
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -52,6 +54,14 @@ const Layout = () => {
                       <MessageSquare className="w-4 h-4" />
                       <span>Posts</span>
                     </Link>
+
+                     {/* ✅ Only show if user is an admin */}
+                     {user.isAdmin && (
+      <Link to="/admin" className="flex items-center space-x-1 hover:text-blue-500">
+        <BarChart3 className="w-4 h-4" />
+        <span>Admin</span>
+      </Link>
+    )}
                   </>
                 )}
               </div>

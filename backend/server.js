@@ -10,6 +10,9 @@ import jwt from 'jsonwebtoken';
 import pg from 'pg';
 import watchlistRoutes from './routes/watchlist.js';
 import postsRoutes from './routes/posts.js'; 
+import adminRoutes from './routes/admin.js';
+
+
 
 const { Pool } = pg;
 const app = express();
@@ -22,9 +25,9 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE'],  // Allow the necessary HTTP methods
   allowedHeaders: ['Content-Type', 'Authorization'],  // Allow the required headers
 }));
-
+    
 app.use(express.json());
-
+app.use('/admin', adminRoutes);
 app.use(cookieParser()); 
 
 // 🛠 PostgreSQL Database Connection
@@ -97,7 +100,7 @@ app.post('/login', async (req, res) => {
   console.log("\n🔹 Received login request:", { email, password });
 
   try {
-    const userResult = await pool.query('SELECT id, email, password_hash FROM users WHERE email = $1', [email]);
+    const userResult = await pool.query('SELECT id, email, password_hash, is_admin FROM users WHERE email = $1', [email]);
 
     if (userResult.rows.length === 0) {
       console.log("⚠️ No user found for email:", email);
@@ -116,7 +119,16 @@ app.post('/login', async (req, res) => {
     }
 
     // Generate JWT token
-    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '1d' });
+
+
+// ✅ Include is_admin in JWT
+const token = jwt.sign(
+  { id: user.id, email: user.email, isAdmin: user.is_admin },
+  JWT_SECRET,
+  { expiresIn: '1d' }
+);
+
+  
 
     console.log("✅ JWT Token Generated:", token);
 
@@ -146,13 +158,18 @@ const authenticateToken = (req, res, next) => {
     return res.status(401).json({ error: "Unauthorized: No token provided" });
   }
 
-  jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (err) {
-      return res.status(403).json({ error: "Forbidden: Invalid token" });
-    }
-    req.user = user; // Attach user data to request
+  jwt.verify(token, JWT_SECRET, (err, decoded) => {
+    if (err) return res.status(403).json({ error: "Forbidden: Invalid token" });
+  
+    req.user = {
+      id: decoded.id,
+      email: decoded.email,
+      isAdmin: decoded.isAdmin || false,
+    };
+  
     next();
   });
+  
 };
 
 // ✅ Authenticated Route to Get User Info

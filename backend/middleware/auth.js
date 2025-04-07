@@ -11,9 +11,12 @@ export const authenticateUser = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    
-    // ✅ Ensure req.user contains userId (required in route)
-    req.user = { userId: decoded.id || decoded.userId };
+
+    // Include isAdmin for admin-only routes
+    req.user = {
+      userId: decoded.id || decoded.userId,
+      isAdmin: decoded.isAdmin || false,
+    };
 
     next();
   } catch (err) {
