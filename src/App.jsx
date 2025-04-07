@@ -9,7 +9,7 @@ import CoinDetail from './pages/CoinDetail';
 import Search from './pages/Search';
 import Watchlist from './pages/Watchlist';
 import Posts from './pages/Posts';
-import { AuthProvider } from './context/AuthContext'; // ✅ Make sure AuthProvider is used
+import { AuthProvider } from './context/AuthContext';
 
 function App() {
   return (
