@@ -11,7 +11,10 @@ export const authenticateUser = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // Attach user info to request
+    
+    // ✅ Ensure req.user contains userId (required in route)
+    req.user = { userId: decoded.id || decoded.userId };
+
     next();
   } catch (err) {
     console.error('JWT verification failed:', err.message);
