@@ -53,7 +53,7 @@ const WatchlistButton = ({ itemId, itemType, onAuthRequired }) => {
         
         await axios.post(
           'http://localhost:5000/api/watchlist',
-          { itemId, itemType },
+          { item_id: itemId, item_type: itemType },
           {
             headers: {
               Authorization: `Bearer ${token}`,

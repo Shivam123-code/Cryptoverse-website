@@ -33,7 +33,7 @@ if (!item_id || !item_type) {
 
         const exists = await pool.query(
             'SELECT * FROM watchlist WHERE user_id = $1 AND item_id = $2',
-            [userId, itemId]
+            [userId, item_id]
         );
 
         if (exists.rows.length > 0) {
@@ -42,7 +42,7 @@ if (!item_id || !item_type) {
 
         await pool.query(
             'INSERT INTO watchlist (user_id, item_id, item_type) VALUES ($1, $2, $3)',
-            [userId, itemId, itemType]
+            [userId, item_id, item_type]
         );
 
         res.json({ message: 'Item added to watchlist' });
