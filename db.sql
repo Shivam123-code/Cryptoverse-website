@@ -3,9 +3,7 @@ FROM information_schema.columns
 WHERE table_name = 'users';
 ALTER TABLE users ADD COLUMN username VARCHAR(255) UNIQUE;
 
-
 SELECT * FROM posts;
-
 
 SELECT posts.*, users.username
 FROM posts
