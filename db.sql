@@ -98,3 +98,8 @@ ALTER COLUMN coin_id TYPE TEXT;
 
 
 SELECT * FROM watchlist WHERE user_id = 'the_user_id_from_token';
+
+--admin
+
+ALTER TABLE users ADD COLUMN is_admin BOOLEAN DEFAULT FALSE;
+UPDATE users SET is_admin = TRUE WHERE email = 's8121730@gmail.com';
