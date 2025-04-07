@@ -8,32 +8,36 @@ const router = express.Router();
 // Get user's watchlist
 router.get('/watchlist', authenticateUser, async (req, res) => {
     try {
-        const { userId } = req.user;
-        const result = await pool.query('SELECT * FROM watchlist WHERE user_id = $1', [userId]);
-
-        if (!result.rows || result.rows.length === 0) {
-            return res.json([]); // Return empty array instead of null
-        }
-
-        res.json(result.rows);
+      const { userId } = req.user;
+      const result = await pool.query(
+        'SELECT * FROM watchlist WHERE user_id = $1',
+        [userId]
+      );
+  
+      if (!result.rows || result.rows.length === 0) {
+        return res.json([]);
+      }
+  
+      res.json(result.rows);
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Failed to fetch watchlist' });
+      console.error(err);
+      res.status(500).json({ error: 'Failed to fetch watchlist' });
     }
-});
+  });
+  
 
 // Add item to watchlist
 router.post('/watchlist', authenticateUser, async (req, res) => {
     try {
         const { userId } = req.user;
-        const { item_id, item_type } = req.body;
-if (!item_id || !item_type) {
+        const {  coin_id, item_type } = req.body;
+if (! coin_id || !item_type) {
   return res.status(400).json({ message: 'Missing item_id or item_type' });
 }
 
         const exists = await pool.query(
             'SELECT * FROM watchlist WHERE user_id = $1 AND item_id = $2',
-            [userId, item_id]
+            [userId,  coin_id]
         );
 
         if (exists.rows.length > 0) {
@@ -42,7 +46,7 @@ if (!item_id || !item_type) {
 
         await pool.query(
             'INSERT INTO watchlist (user_id, item_id, item_type) VALUES ($1, $2, $3)',
-            [userId, item_id, item_type]
+            [userId,  coin_id, item_type]
         );
 
         res.json({ message: 'Item added to watchlist' });

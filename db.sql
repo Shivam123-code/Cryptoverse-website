@@ -80,8 +80,21 @@ VALUES ('Test Post', 'This is a test post.', 3, NOW());
 COMMIT;
 
 -- Step 4: View inserted post
-SELECT * FROM posts;
+SELECT * FROM watchlist;
 
 
 ALTER TABLE posts
 ADD COLUMN updated_at TIMESTAMP;
+
+ALTER TABLE watchlist
+ADD COLUMN item_id TEXT,
+ADD COLUMN item_type TEXT;
+
+
+ALTER TABLE watchlist ALTER COLUMN coin_id DROP NOT NULL;
+
+ALTER TABLE watchlist
+ALTER COLUMN coin_id TYPE TEXT;
+
+
+SELECT * FROM watchlist WHERE user_id = 'the_user_id_from_token';
