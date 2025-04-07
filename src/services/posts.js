@@ -1,9 +1,6 @@
 import axios from 'axios';
 
-
-const API_BASE_URL = 'http://localhost:5000/posts';
-
-
+const API_BASE_URL = 'http://localhost:5000/api/posts';
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem('token');
@@ -19,7 +16,7 @@ export const createPost = async (postData) => {
   const token = localStorage.getItem('token');
   if (!token) throw new Error('Not authenticated');
 
-  const response = await axios.post(`${API_BASE}/posts`, postData, {
+  const response = await axios.post(API_BASE_URL, postData, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

@@ -1,5 +1,6 @@
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
+dotenv.config();
 import express from 'express';
 import cors from 'cors';
 import session from 'express-session';
@@ -9,10 +10,10 @@ import jwt from 'jsonwebtoken';
 import pg from 'pg';
 import watchlistRoutes from './routes/watchlist.js';
 import postsRoutes from './routes/posts.js'; 
-dotenv.config();
+
 const { Pool } = pg;
 const app = express();
-const JWT_SECRET = "6b39b8c62b74e7187a07c0d857c07fb9fd4299442dd78ce29c2eb764d32a8ffdfe98435809c9d92a2557e723c4da262aa95c4e163a10a628aae967872cf72dee";
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // 🛠 Enable JSON Parsing & CORS
 app.use(cors({
