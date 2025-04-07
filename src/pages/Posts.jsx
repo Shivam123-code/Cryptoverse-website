@@ -48,7 +48,10 @@ const Posts = () => {
     try {
       let savedPost;
       if (editingPostId) {
-        savedPost = await updatePost(editingPostId, newPost);
+        savedPost = await updatePost(editingPostId, {
+          ...newPost,
+          user_id: user.id,
+        });
         setPosts(posts.map(p => (p.id === editingPostId ? savedPost : p)));
       } else {
         savedPost = await createPost({

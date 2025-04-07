@@ -81,3 +81,7 @@ COMMIT;
 
 -- Step 4: View inserted post
 SELECT * FROM posts;
+
+
+ALTER TABLE posts
+ADD COLUMN updated_at TIMESTAMP;
