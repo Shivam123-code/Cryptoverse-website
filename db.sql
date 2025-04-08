@@ -62,7 +62,7 @@ SELECT * FROM posts WHERE user_id NOT IN (SELECT id FROM users);
 
 
 INSERT INTO posts (title, content, user_id, created_at) 
-VALUES ('Test Post', 'This is a test post.', 1, NOW());
+VALUES ('Test Post', 'This is a test post.', 4, NOW());
 
 DROP TABLE IF EXISTS session;
 DROP TABLE IF EXISTS sessions;
@@ -74,7 +74,7 @@ SELECT * FROM users;
 
 -- Step 2: Insert again (only if user_id exists!)
 INSERT INTO posts (title, content, user_id, created_at) 
-VALUES ('Test Post', 'This is a test post.', 3, NOW());
+VALUES ('Test Post', 'This is a test post.', 2, NOW());
 
 -- Step 3: Commit (if needed)
 COMMIT;

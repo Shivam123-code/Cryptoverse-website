@@ -12,6 +12,9 @@ const Posts = () => {
   const [editingPostId, setEditingPostId] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  const [postToDelete, setPostToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -49,15 +52,15 @@ const Posts = () => {
       let savedPost;
       if (editingPostId) {
         savedPost = await updatePost(editingPostId, {
-          ...newPost,
-          user_id: user.id,
+          title: newPost.title,
+          content: newPost.content,
         });
         setPosts(posts.map(p => (p.id === editingPostId ? savedPost : p)));
       } else {
         savedPost = await createPost({
-          ...newPost,
+          title: newPost.title,
+          content: newPost.content,
           user_id: user.id,
-          created_at: new Date().toISOString()
         });
         setPosts([savedPost, ...posts]);
       }
@@ -74,20 +77,26 @@ const Posts = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    try {
-      await deletePost(id);
-      setPosts(posts.filter(p => p.id !== id));
-    } catch (err) {
-      console.error('Error deleting post:', err);
-      setError('Failed to delete post.');
-    }
-  };
-
   const handleEdit = (post) => {
     setEditingPostId(post.id);
     setNewPost({ title: post.title, content: post.content });
     setShowForm(true);
+  };
+
+  const handleDelete = async () => {
+    if (!postToDelete) return;
+
+    setIsDeleting(true);
+    try {
+      await deletePost(postToDelete.id);
+      setPosts(posts.filter((post) => post.id !== postToDelete.id));
+      setPostToDelete(null);
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      setError('Failed to delete post.');
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   if (loading) {
@@ -201,7 +210,7 @@ const Posts = () => {
                         <Pencil className="w-5 h-5" />
                       </button>
                       <button
-                        onClick={() => handleDelete(post.id)}
+                        onClick={() => setPostToDelete(post)}
                         className="text-red-400 hover:text-red-600"
                         title="Delete"
                       >
@@ -217,6 +226,34 @@ const Posts = () => {
               </div>
             )
           ))}
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {postToDelete && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-gray-900 rounded-lg p-6 border border-gray-700 w-full max-w-md">
+            <h3 className="text-lg font-semibold text-white mb-4">Confirm Delete</h3>
+            <p className="text-gray-400 mb-6">
+              Are you sure you want to delete <strong>"{postToDelete.title}"</strong>? This action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={() => setPostToDelete(null)}
+                className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 flex items-center space-x-2"
+              >
+                {isDeleting && <Loader2 className="w-4 h-4 animate-spin" />}
+                <span>Delete</span>
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

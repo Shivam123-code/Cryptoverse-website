@@ -4,8 +4,12 @@ const API_BASE_URL = 'http://localhost:5000/api/posts';
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem('token');
-  return token ? { Authorization: `Bearer ${token}` } : {};
+  return {
+    'Content-Type': 'application/json',
+    ...(token && { Authorization: `Bearer ${token}` }),
+  };
 };
+
 
 export const getPosts = async () => {
   const response = await axios.get(API_BASE_URL);

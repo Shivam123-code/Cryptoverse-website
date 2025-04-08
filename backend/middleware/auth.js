@@ -13,8 +13,8 @@ export const authenticateUser = (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // Include isAdmin for admin-only routes
-    req.user = {
-      userId: decoded.id || decoded.userId,
+    req.user = { userId: decoded.id || decoded.userId,
+
       isAdmin: decoded.isAdmin || false,
     };
 
