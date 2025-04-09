@@ -103,3 +103,20 @@ SELECT * FROM watchlist WHERE user_id = 'the_user_id_from_token';
 
 ALTER TABLE users ADD COLUMN is_admin BOOLEAN DEFAULT FALSE;
 UPDATE users SET is_admin = TRUE WHERE email = 's8121730@gmail.com';
+
+
+--history of coins
+
+CREATE TABLE coin_snapshots (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  coin_id TEXT NOT NULL,
+  name TEXT NOT NULL,
+  price NUMERIC NOT NULL,
+  price_change_percentage_24h NUMERIC,
+  snapshot_time TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+--check snapshot
+SELECT * FROM coin_snapshots ORDER BY snapshot_time DESC;
+

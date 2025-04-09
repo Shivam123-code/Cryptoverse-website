@@ -11,6 +11,7 @@ import Watchlist from './pages/Watchlist';
 import Posts from './pages/Posts';
 import { AuthProvider } from './context/AuthContext';
 
+
 function App() {
   return (
     <AuthProvider>
@@ -25,6 +26,8 @@ function App() {
             <Route path="search" element={<Search />} />
             <Route path="watchlist" element={<Watchlist />} />
             <Route path="posts" element={<Posts />} />
+            <Route path="/snapshots/:itemId" element={<Snapshots />} />
+
           </Route>
         </Routes>
       </BrowserRouter>

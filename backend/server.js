@@ -11,7 +11,7 @@ import pg from 'pg';
 import watchlistRoutes from './routes/watchlist.js';
 import postsRoutes from './routes/posts.js'; 
 import adminRoutes from './routes/admin.js';
-
+import snapshotRoutes from './routes/snapshots.js';
 
 
 const { Pool } = pg;
@@ -62,6 +62,7 @@ app.use(session({
 app.use('/api', watchlistRoutes);
 app.use('/api/posts', postsRoutes);
 app.use("/routes/watchlist", watchlistRoutes);
+app.use('/api/snapshots', snapshotRoutes);
 
 
 // ✅ Register Route

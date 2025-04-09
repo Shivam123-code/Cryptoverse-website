@@ -33,6 +33,21 @@ const WatchlistButton = ({ itemId, itemType, onAuthRequired }) => {
     checkWatchlist();
   }, [itemId, onAuthRequired]);
 
+  const handleSnapshot = async (item_id) => {
+    const token = localStorage.getItem('token');
+    try {
+      await axios.post(`http://localhost:5000/api/snapshots/${item_id}`, null, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      alert('Snapshot taken successfully');
+    } catch (error) {
+      console.error('Snapshot failed:', error);
+      alert('Snapshot failed');
+    }
+  };
+  
+
+
   const handleToggleWatchlist = async () => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -50,6 +65,7 @@ const WatchlistButton = ({ itemId, itemType, onAuthRequired }) => {
         });
         setIsInWatchlist(false);
       } else {
+        
         
         await axios.post(
           'http://localhost:5000/api/watchlist',
@@ -71,14 +87,19 @@ const WatchlistButton = ({ itemId, itemType, onAuthRequired }) => {
   };
 
   return (
-    <button
-      onClick={handleToggleWatchlist}
-      className={`px-4 py-2 rounded ${
-        isInWatchlist ? 'bg-red-500' : 'bg-blue-500'
-      } text-white transition duration-200`}
+
+    <><button
+      onClick={() => handleSnapshot(coin.id)}
+      className="text-blue-400 hover:text-blue-600 mt-2 text-sm"
     >
-      {isInWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'}
-    </button>
+      Take Snapshot
+    </button><button
+      onClick={handleToggleWatchlist}
+      className={`px-4 py-2 rounded ${isInWatchlist ? 'bg-red-500' : 'bg-blue-500'} text-white transition duration-200`}
+    >
+        {isInWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'}
+      </button></>
+    
   );
 };
 
