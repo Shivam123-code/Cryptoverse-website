@@ -152,7 +152,7 @@ const handleSnapshot = async (item_id) => {
       headers: { Authorization: `Bearer ${token}` },
     });
     alert('Snapshot taken successfully');
-    navigate(`/Snapshots.jsx/${item_id}`); // Navigate after success
+    navigate(`/snapshots/${item_id}`); // Navigate after success
   } catch (error) {
     console.error('Snapshot failed:', error);
     alert('Snapshot failed');
