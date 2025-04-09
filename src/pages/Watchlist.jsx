@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
@@ -66,6 +64,22 @@ const Watchlist = () => {
     }
   };
 
+  // 📸 Manual snapshot handler
+  const handleManualSnapshot = async (coinId) => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      await axios.post('http://localhost:5000/api/snapshots', { coinId }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      alert(`Snapshot stored for ${coinId}`);
+    } catch (err) {
+      console.error('Snapshot error:', err);
+      alert('Failed to take snapshot');
+    }
+  };
+
   if (loading) return <p className="text-white">Loading watchlist...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
   if (coinDetails.length === 0) return <p className="text-white">No items in your watchlist.</p>;
@@ -84,10 +98,27 @@ const Watchlist = () => {
                   <p className="text-sm text-gray-400">{coin.symbol.toUpperCase()}</p>
                 </div>
               </div>
-              <button onClick={() => handleDelete(coin.id)} className="text-red-400 hover:text-red-600">
-                <i className="fas fa-trash-alt" />
-              </button>
+              <div className="flex items-center gap-3">
+                {/* ❌ Delete */}
+                <button
+                  onClick={() => handleDelete(coin.id)}
+                  className="text-red-400 hover:text-red-600"
+                  title="Delete from Watchlist"
+                >
+                  <i className="fas fa-trash-alt" />
+                </button>
+
+                {/* 📸 Snapshot */}
+                <button
+                  onClick={() => handleManualSnapshot(coin.id)}
+                  className="text-blue-400 hover:text-blue-600"
+                  title="Take Snapshot"
+                >
+                  <i className="fas fa-camera" />
+                </button>
+              </div>
             </div>
+
             <div className="flex justify-between">
               <div>
                 <p className="text-sm text-gray-400">Price</p>

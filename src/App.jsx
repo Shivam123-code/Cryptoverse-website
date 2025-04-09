@@ -9,6 +9,8 @@ import CoinDetail from './pages/CoinDetail';
 import Search from './pages/Search';
 import Watchlist from './pages/Watchlist';
 import Posts from './pages/Posts';
+import Snapshots from './pages/Snapshots';
+import SnapshotList from './pages/SnapshotList';
 import { AuthProvider } from './context/AuthContext';
 
 
@@ -25,8 +27,10 @@ function App() {
             <Route path="coins/:id" element={<CoinDetail />} />
             <Route path="search" element={<Search />} />
             <Route path="watchlist" element={<Watchlist />} />
-            <Route path="posts" element={<Posts />} />
+            <Route path="/snapshots" element={<SnapshotList />} />
             <Route path="/snapshots/:itemId" element={<Snapshots />} />
+            <Route path="posts" element={<Posts />} />
+           
 
           </Route>
         </Routes>

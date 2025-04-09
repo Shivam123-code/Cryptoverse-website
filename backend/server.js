@@ -14,6 +14,7 @@ import adminRoutes from './routes/admin.js';
 import snapshotRoutes from './routes/snapshots.js';
 
 
+
 const { Pool } = pg;
 const app = express();
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -183,3 +184,6 @@ app.get('/user', authenticateToken, (req, res) => {
 app.listen(5000, () => {
   console.log('✅ Server running on port 5000');
 });
+
+// snapshots.js
+// export default router;

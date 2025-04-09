@@ -50,6 +50,12 @@ const Layout = () => {
                       <User className="w-4 h-4" />
                       <span>Watchlist</span>
                     </Link>
+
+                    <Link to="/snapshots" className="flex items-center space-x-1 hover:text-blue-500">
+      <BarChart3 className="w-4 h-4" />
+      <span>Snapshots</span>
+    </Link>
+
                     <Link to="/posts" className="flex items-center space-x-1 hover:text-blue-500">
                       <MessageSquare className="w-4 h-4" />
                       <span>Posts</span>

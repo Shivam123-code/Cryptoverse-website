@@ -2,11 +2,11 @@ import express from 'express';
 import { pool } from '../db.js'; 
 import { authenticateUser } from '../middleware/auth.js';
 import fetch from 'node-fetch';
-import { addSnapshotForCoin } from '../routes/snapshots.js';
+import { addSnapshotForCoin } from '../utils/snapshot.js';
 
 const router = express.Router();
 
-router.post('/', verifyToken, async (req, res) => {
+router.post('/', authenticateUser, async (req, res) => {
   const { item_id } = req.body;
   const userId = req.user.id;
 
