@@ -11,7 +11,7 @@ const Home = () => {
             <div className="text-center">
               <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight mb-8">
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">
-                  Explore the Crypto Universe
+                  Explore the Crypto Universee
                 </span>
               </h1>
               <p className="mt-3 max-w-md mx-auto text-xl text-gray-300 sm:text-2xl md:mt-5 md:max-w-3xl">
