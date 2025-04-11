@@ -21,7 +21,7 @@ const CoinDetail = () => {
       } catch (error) {
         console.error('Error fetching coin:', error);
       } finally {
-        setLoading(false);//ding
+        setLoading(false);
       }
     };
 
