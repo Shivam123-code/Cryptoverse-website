@@ -10,7 +10,7 @@ const ExchangeDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [retrying, setRetrying] = useState(false);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);//
 
   const fetchExchange = async () => {
     try {

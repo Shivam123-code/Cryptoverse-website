@@ -10,7 +10,7 @@ const Admin = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { isAdmin } = useAuth();
-  const navigate = useNavigate();
+  const navigate = useNavigate();//
 
   useEffect(() => {
     if (!isAdmin) {
