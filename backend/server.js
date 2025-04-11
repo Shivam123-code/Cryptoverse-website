@@ -62,7 +62,7 @@ app.use(session({
 // 🛠 API routes
 app.use('/api', watchlistRoutes);
 app.use('/api/posts', postsRoutes);
-app.use("/routes/watchlist", watchlistRoutes);
+
 app.use('/api/snapshots', snapshotRoutes);
 
 

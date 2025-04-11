@@ -1,12 +1,13 @@
 import express from 'express';
 import axios from 'axios';
-import { authenticateUser, authenticateToken } from '../middleware/auth.js'; // ✅ Fix here
+import { authenticateToken } from '../middleware/auth.js'; // ✅ Fix here
 import { pool as db } from '../db.js'; // ✅ Use this
 
 const router = express.Router();
 
 // POST /api/snapshots/:coin_id → create a new snapshot for a coin
-router.post('/:coin_id', authenticateUser, async (req, res) => {
+router.post('/:coin_id', authenticateToken, async (req, res) => {
+  console.log("📥 POST /snapshots hit by:", req.user, req.params.coin_id);
   const { coin_id } = req.params;
 
   try {
@@ -19,8 +20,9 @@ router.post('/:coin_id', authenticateUser, async (req, res) => {
       await db.query(
         `INSERT INTO coin_snapshots (coin_id, name, price, price_change_percentage_24h, user_id)
          VALUES ($1, $2, $3, $4, $5)`,
-        [coin.id, coin.name, coin.current_price, coin.price_change_percentage_24h, req.user.userId]
+        [coin.id, coin.name, coin.current_price, coin.price_change_percentage_24h, req.user.id] // 👈 fix here
       );
+      
 
       res.status(201).json({ message: 'Snapshot created' });
     } else {

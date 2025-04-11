@@ -1,5 +1,5 @@
 import express from 'express';
-import { authenticateUser } from '../middleware/auth.js';
+import { authenticateToken } from '../middleware/auth.js';
 import { pool } from '../db.js';
 
 const router = express.Router();
@@ -13,7 +13,7 @@ const checkAdmin = (req, res, next) => {
 };
 
 // GET /admin/stats
-router.get('/stats', authenticateUser, checkAdmin, async (req, res) => {
+router.get('/stats', authenticateToken, checkAdmin, async (req, res) => {
   try {
     const totalUsersQuery = await pool.query('SELECT COUNT(*) FROM users');
     const totalPostsQuery = await pool.query('SELECT COUNT(*) FROM posts');
@@ -31,7 +31,7 @@ router.get('/stats', authenticateUser, checkAdmin, async (req, res) => {
 });
 
 // GET /admin/users
-router.get('/users', authenticateUser, checkAdmin, async (req, res) => {
+router.get('/users', authenticateToken, checkAdmin, async (req, res) => {
   try {
     const usersQuery = await pool.query(`
       SELECT id, email, created_at, last_sign_in_at

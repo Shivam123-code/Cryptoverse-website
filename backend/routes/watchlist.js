@@ -1,12 +1,12 @@
 import express from 'express';
 import { pool } from '../db.js'; 
-import { authenticateUser } from '../middleware/auth.js';
+import { authenticateToken} from '../middleware/auth.js';
 import fetch from 'node-fetch';
 import { addSnapshotForCoin } from '../utils/snapshot.js';
 
 const router = express.Router();
 
-router.post('/', authenticateUser, async (req, res) => {
+router.post('/', authenticateToken, async (req, res) => {
   const { item_id } = req.body;
   const userId = req.user.id;
 
@@ -56,29 +56,32 @@ router.post('/snapshot', async (req, res) => {
 });
 
 
+
 // Get user's watchlist
-router.get('/watchlist', authenticateUser, async (req, res) => {
-    try {
-      const { userId } = req.user;
-      const result = await pool.query(
-        'SELECT * FROM watchlist WHERE user_id = $1',
-        [userId]
-      );
-  
-      if (!result.rows || result.rows.length === 0) {
-        return res.json([]);
-      }
-  
-      res.json(result.rows);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Failed to fetch watchlist' });
+router.get('/watchlist', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id; // ✅ Fix here
+
+    const result = await pool.query(
+      'SELECT * FROM watchlist WHERE user_id = $1',
+      [userId]
+    );
+
+    if (!result.rows || result.rows.length === 0) {
+      return res.json([]); // No data, still successful
     }
-  });
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error('❌ Error fetching watchlist:', err);
+    res.status(500).json({ error: 'Failed to fetch watchlist' });
+  }
+});
+
 
 
 // Add item to watchlist
-router.post('/watchlist', authenticateUser, async (req, res) => {
+router.post('/watchlist', authenticateToken, async (req, res) => {
     try {
         const { userId } = req.user;
         const {  coin_id, item_type } = req.body;
@@ -108,7 +111,7 @@ if (! coin_id || !item_type) {
 });
 
 // Remove item from watchlist
-router.delete('/watchlist/:id', authenticateUser, async (req, res) => {
+router.delete('/watchlist/:id', authenticateToken, async (req, res) => {
     try {
         const { userId } = req.user;
         const { id } = req.params;
