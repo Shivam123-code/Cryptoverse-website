@@ -97,7 +97,7 @@ ALTER TABLE watchlist
 ALTER COLUMN coin_id TYPE TEXT;
 
 
-SELECT * FROM watchlist WHERE user_id = 'the_user_id_from_token';
+
 
 --admin
 
