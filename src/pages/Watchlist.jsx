@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
-
 const Watchlist = () => {
   const [watchlistItems, setWatchlistItems] = useState([]);
   const [coinDetails, setCoinDetails] = useState([]);
@@ -91,47 +90,60 @@ const Watchlist = () => {
       <h1 className="text-2xl font-bold mb-4 text-white">Your Watchlist</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {coinDetails.map((coin) => (
-          <div key={coin.id} className="bg-[#1e293b] text-white rounded-lg p-4 shadow-md">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center space-x-2">
-                <img src={coin.image} alt={coin.name} className="w-6 h-6" />
-                <div>
-                  <p className="font-semibold">{coin.name}</p>
-                  <p className="text-sm text-gray-400">{coin.symbol.toUpperCase()}</p>
+          <div key={coin.id} className="relative group">
+            {/* Card Content wrapped with Link */}
+            <Link
+              to={`/coins/${coin.id}`}
+              className="bg-[#1e293b] text-white rounded-lg p-4 shadow-md hover:bg-[#334155] transition duration-200 block"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center space-x-2">
+                  <img src={coin.image} alt={coin.name} className="w-6 h-6" />
+                  <div>
+                    <p className="font-semibold">{coin.name}</p>
+                    <p className="text-sm text-gray-400">{coin.symbol.toUpperCase()}</p>
+                  </div>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                {/* ❌ Delete */}
-                <button
-                  onClick={() => handleDelete(coin.id)}
-                  className="text-red-400 hover:text-red-600"
-                  title="Delete from Watchlist"
-                >
-                  <i className="fas fa-trash-alt" />
-                </button>
 
-                {/* 📸 Snapshot */}
-                <button
-                  onClick={() => handleManualSnapshot(coin.id)}
-                  className="text-blue-400 hover:text-blue-600"
-                  title="Take Snapshot"
-                >
-                  <i className="fas fa-camera" />
-                </button>
+              <div className="flex justify-between">
+                <div>
+                  <p className="text-sm text-gray-400">Price</p>
+                  <p>${coin.current_price.toLocaleString()}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-gray-400">24h change</p>
+                  <p className={coin.price_change_percentage_24h < 0 ? 'text-red-500' : 'text-green-500'}>
+                    {coin.price_change_percentage_24h.toFixed(2)}%
+                  </p>
+                </div>
               </div>
-            </div>
+            </Link>
 
-            <div className="flex justify-between">
-              <div>
-                <p className="text-sm text-gray-400">Price</p>
-                <p>${coin.current_price.toLocaleString()}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-sm text-gray-400">24h change</p>
-                <p className={coin.price_change_percentage_24h < 0 ? 'text-red-500' : 'text-green-500'}>
-                  {coin.price_change_percentage_24h.toFixed(2)}%
-                </p>
-              </div>
+            {/* Buttons positioned over card (not part of the Link) */}
+            <div className="absolute top-2 right-2 flex space-x-2 z-10">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  handleDelete(coin.id);
+                }}
+                className="text-red-400 hover:text-red-600"
+                title="Delete from Watchlist"
+              >
+                <i className="fas fa-trash-alt" />
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  handleManualSnapshot(coin.id);
+                }}
+                className="text-blue-400 hover:text-blue-600"
+                title="Take Snapshot"
+              >
+                <i className="fas fa-camera" />
+              </button>
             </div>
           </div>
         ))}
