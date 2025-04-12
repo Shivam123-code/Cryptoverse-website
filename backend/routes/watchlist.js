@@ -111,21 +111,21 @@ if (! coin_id || !item_type) {
 });
 
 // Remove item from watchlist
-router.delete('/watchlist/:id', authenticateToken, async (req, res) => {
-    try {
-        const { userId } = req.user;
-        const { id } = req.params;
+router.delete('/:id', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { id } = req.params;
 
-        await pool.query(
-            'DELETE FROM watchlist WHERE user_id = $1 AND id = $2',
-            [userId, id]
-        );
+    await pool.query(
+      'DELETE FROM watchlist WHERE user_id = $1 AND item_id = $2',
+      [userId, id]
+    );
 
-        res.json({ message: 'Item removed from watchlist' });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Failed to remove item' });
-    }
+    res.json({ message: 'Item removed from watchlist' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to remove item' });
+  }
 });
 
 export default router;
