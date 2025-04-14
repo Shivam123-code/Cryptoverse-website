@@ -4,7 +4,7 @@ dotenv.config();
 import express from 'express';
 import cors from 'cors';
 import session from 'express-session';
-import pgSession from 'connect-pg-simple'; // Correct import
+import pgSession from 'connect-pg-simple'; 
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import pg from 'pg';
