@@ -1,46 +1,35 @@
 import express from 'express';
-import { authenticateToken } from '../middleware/auth.js';
-import { pool } from '../db.js';
+import { authenticateToken } from '../middleware/authenticateToken.js';
+import { isAdmin } from '../middleware/isAdmin.js';
+import pool from '../db.js';
 
 const router = express.Router();
 
-// Middleware to check if the user is an admin
-const checkAdmin = (req, res, next) => {
-  if (!req.user?.isAdmin) {
-    return res.status(403).json({ message: 'Access denied: Admins only' });
-  }
-  next();
-};
-
-// GET /admin/stats
-router.get('/stats', authenticateToken, checkAdmin, async (req, res) => {
+// Route 1: Get Admin Stats
+router.get('/stats', authenticateToken, isAdmin, async (req, res) => {
   try {
-    const totalUsersQuery = await pool.query('SELECT COUNT(*) FROM users');
-    const totalPostsQuery = await pool.query('SELECT COUNT(*) FROM posts');
-    const totalWatchlistQuery = await pool.query('SELECT COUNT(*) FROM watchlist');
+    const totalUsers = await pool.query('SELECT COUNT(*) FROM users');
+    const totalPosts = await pool.query('SELECT COUNT(*) FROM posts');
+    const totalWatchlistItems = await pool.query('SELECT COUNT(*) FROM watchlist');
 
     res.json({
-      totalUsers: parseInt(totalUsersQuery.rows[0].count),
-      totalPosts: parseInt(totalPostsQuery.rows[0].count),
-      totalWatchlistItems: parseInt(totalWatchlistQuery.rows[0].count),
+      totalUsers: parseInt(totalUsers.rows[0].count),
+      totalPosts: parseInt(totalPosts.rows[0].count),
+      totalWatchlistItems: parseInt(totalWatchlistItems.rows[0].count),
     });
   } catch (err) {
-    console.error('Error fetching stats:', err.message);
+    console.error('Admin stats error:', err);
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-// GET /admin/users
-router.get('/users', authenticateToken, checkAdmin, async (req, res) => {
+// Route 2: Get All Users
+router.get('/users', authenticateToken, isAdmin, async (req, res) => {
   try {
-    const usersQuery = await pool.query(`
-      SELECT id, email, created_at, last_sign_in_at
-      FROM users
-      ORDER BY created_at DESC
-    `);
-    res.json(usersQuery.rows);
+    const result = await pool.query('SELECT id, email, created_at, last_sign_in_at FROM users');
+    res.json(result.rows);
   } catch (err) {
-    console.error('Error fetching users:', err.message);
+    console.error('Error getting users:', err);
     res.status(500).json({ message: 'Server error' });
   }
 });
