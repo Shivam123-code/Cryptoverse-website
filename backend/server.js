@@ -19,7 +19,7 @@ const { Pool } = pg;
 const app = express();
 const JWT_SECRET = process.env.JWT_SECRET;
 
-// 🛠 Enable JSON Parsing
+// 🛠 Enable JSON Parsing & CORS
 app.use(cors({
   origin: ["http://localhost:3000", "http://localhost:5173"],
   credentials: true,  // Allow cookies and headers like Authorization
