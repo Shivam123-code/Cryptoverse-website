@@ -12,6 +12,7 @@ import Posts from './pages/Posts';
 import Snapshots from './pages/Snapshots';
 import SnapshotList from './pages/SnapshotList';
 import { AuthProvider } from './context/AuthContext';
+import Admin from './pages/Admin';
 
 
 function App() {
@@ -30,7 +31,7 @@ function App() {
             <Route path="/snapshots" element={<SnapshotList />} />
             <Route path="/snapshots/:itemId" element={<Snapshots />} />
             <Route path="posts" element={<Posts />} />
-           
+            <Route path="admin" element={<Admin/>}/>
 
           </Route>
         </Routes>

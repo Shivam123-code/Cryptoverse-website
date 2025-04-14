@@ -9,6 +9,11 @@ CREATE TABLE users (
     username VARCHAR(100) NOT NULL UNIQUE
 );
 
+ALTER TABLE users
+ADD COLUMN created_at TIMESTAMP DEFAULT NOW(),
+ADD COLUMN last_sign_in_at TIMESTAMP;
+
+
 DROP TABLE IF EXISTS posts;
 
 CREATE TABLE posts (

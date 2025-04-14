@@ -1,7 +1,7 @@
 import express from 'express';
-import { authenticateToken } from '../middleware/authenticateToken.js';
+import { authenticateToken } from '../middleware/auth.js';
 import { isAdmin } from '../middleware/isAdmin.js';
-import pool from '../db.js';
+import {pool} from '../db.js';
 
 const router = express.Router();
 
@@ -26,7 +26,7 @@ router.get('/stats', authenticateToken, isAdmin, async (req, res) => {
 // Route 2: Get All Users
 router.get('/users', authenticateToken, isAdmin, async (req, res) => {
   try {
-    const result = await pool.query('SELECT id, email, created_at, last_sign_in_at FROM users');
+    const result =await pool.query('SELECT id, email, username, is_admin FROM users');
     res.json(result.rows);
   } catch (err) {
     console.error('Error getting users:', err);
