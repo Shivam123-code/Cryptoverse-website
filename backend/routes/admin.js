@@ -5,7 +5,7 @@ import {pool} from '../db.js';
 
 const router = express.Router();
 
-// Route 1: Get Admin Stats
+//  Get Admin Stats
 router.get('/stats', authenticateToken, isAdmin, async (req, res) => {
   try {
     const totalUsers = await pool.query('SELECT COUNT(*) FROM users');
