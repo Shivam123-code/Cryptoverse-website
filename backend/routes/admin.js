@@ -26,7 +26,11 @@ router.get('/stats', authenticateToken, isAdmin, async (req, res) => {
 // Route 2: Get All Users
 router.get('/users', authenticateToken, isAdmin, async (req, res) => {
   try {
-    const result =await pool.query('SELECT id, email, username, is_admin FROM users');
+    const result = await pool.query(`
+      SELECT id, email, username, is_admin, created_at, last_sign_in_at 
+      FROM users
+    `);
+    
     res.json(result.rows);
   } catch (err) {
     console.error('Error getting users:', err);

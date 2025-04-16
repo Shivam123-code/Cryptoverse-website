@@ -11,7 +11,7 @@ const Admin = () => {
   const [stats, setStats] = useState({ totalUsers: 0, totalPosts: 0, totalWatchlistItems: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { isAdmin, token } = useAuth(); // Make sure token is accessible
+  const { isAdmin, token } = useAuth(); 
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -125,13 +125,15 @@ const Admin = () => {
                 <tr key={user.id} className="hover:bg-gray-800/50">
                   <td className="px-6 py-4 whitespace-nowrap text-sm">{user.email}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                    {new Date(user.created_at).toLocaleDateString()}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                    {user.last_sign_in_at 
-                      ? new Date(user.last_sign_in_at).toLocaleDateString()
-                      : 'Never'}
-                  </td>
+  {user.created_at 
+    ? new Date(user.created_at).toLocaleDateString() 
+    : 'N/A'}
+</td>
+<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+  {user.last_sign_in_at 
+    ? new Date(user.last_sign_in_at).toLocaleDateString() 
+    : 'Never'}
+</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <button
                       onClick={() => handleDeleteUser(user.id)}

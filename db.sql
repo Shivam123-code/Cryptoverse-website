@@ -38,6 +38,7 @@ CREATE TABLE watchlist (
 
 
 
+SELECT id, email, created_at, last_sign_in_at FROM users;
 
 
 
