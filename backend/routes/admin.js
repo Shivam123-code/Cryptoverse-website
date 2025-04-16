@@ -34,4 +34,21 @@ router.get('/users', authenticateToken, isAdmin, async (req, res) => {
   }
 });
 
+// Add this route to delete a user by ID
+router.delete('/user/:id', authenticateToken, isAdmin, async (req, res) => {
+  const userId = req.params.id;
+
+  try {
+    // First, delete the user from the database
+    await pool.query('DELETE FROM users WHERE id = $1', [userId]);
+
+    // Send success response
+    res.status(200).json({ message: 'User deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting user:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
 export default router;

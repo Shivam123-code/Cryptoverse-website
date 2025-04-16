@@ -15,3 +15,17 @@ export const getAllUsers = async () => {
   });
   return response.data;
 };
+
+export const deleteUser = async (userId) => {
+  const token = localStorage.getItem('token');
+  try {
+    const response = await axios.delete(`http://localhost:5000/api/admin/user/${userId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    throw new Error('Failed to delete user');
+  }
+};
+
