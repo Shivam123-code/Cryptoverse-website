@@ -29,3 +29,10 @@ export const deleteUser = async (userId) => {
   }
 };
 
+
+
+export const getAllPosts = async () => {
+  const res = await axios.get('/api/admin/posts');
+  return res.data;
+};
+

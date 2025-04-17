@@ -85,15 +85,19 @@ const Admin = () => {
             </div>
           </div>
         </div>
-        <div className="bg-gray-900 p-6 rounded-lg border border-gray-800">
-          <div className="flex items-center space-x-3">
-            <MessageSquare className="w-8 h-8 text-purple-500" />
-            <div>
-              <p className="text-sm text-gray-400">Total Posts</p>
-              <p className="text-2xl font-bold">{stats.totalPosts}</p>
-            </div>
-          </div>
-        </div>
+        <div 
+  className="bg-gray-900 p-6 rounded-lg border border-gray-800 cursor-pointer hover:bg-gray-800 transition"
+  onClick={() => navigate('/admin/posts')}
+>
+  <div className="flex items-center space-x-3">
+    <MessageSquare className="w-8 h-8 text-purple-500" />
+    <div>
+      <p className="text-sm text-gray-400">Total Posts</p>
+      <p className="text-2xl font-bold">{stats.totalPosts}</p>
+    </div>
+  </div>
+</div>
+
         <div className="bg-gray-900 p-6 rounded-lg border border-gray-800">
           <div className="flex items-center space-x-3">
             <Star className="w-8 h-8 text-yellow-500" />

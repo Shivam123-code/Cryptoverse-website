@@ -64,6 +64,7 @@ app.use('/api', watchlistRoutes);
 app.use('/api/posts', postsRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/snapshots', snapshotRoutes);
+app.use('/api/admin', adminRoutes);
 
 
 // ✅ Register Route

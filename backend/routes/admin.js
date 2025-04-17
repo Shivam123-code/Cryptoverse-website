@@ -54,5 +54,37 @@ router.delete('/user/:id', authenticateToken, isAdmin, async (req, res) => {
   }
 });
 
+// Route to get all posts grouped by user
+// Get All Posts Grouped by User
+router.get('/posts', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT 
+        u.id AS user_id,
+        u.email,
+        json_agg(
+          json_build_object(
+            'id', p.id,
+            'title', p.title,
+            'content', p.content,
+            'created_at', p.created_at
+          )
+        ) AS posts
+      FROM users u
+      LEFT JOIN posts p ON u.id = p.user_id
+      GROUP BY u.id, u.email
+    `);
+
+    // Log the result for debugging
+    console.log(result.rows); // Check the output
+
+    res.json(result.rows); // Send the grouped posts
+  } catch (err) {
+    console.error('Error fetching posts by user:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
 
 export default router;

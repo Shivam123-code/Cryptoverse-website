@@ -13,6 +13,8 @@ import Snapshots from './pages/Snapshots';
 import SnapshotList from './pages/SnapshotList';
 import { AuthProvider } from './context/AuthContext';
 import Admin from './pages/Admin';
+import  AdminPosts  from './pages/AdminPosts';
+
 
 
 function App() {
@@ -32,6 +34,7 @@ function App() {
             <Route path="/snapshots/:itemId" element={<Snapshots />} />
             <Route path="posts" element={<Posts />} />
             <Route path="admin" element={<Admin/>}/>
+            <Route path="/admin/posts" element={<AdminPosts />} />
 
           </Route>
         </Routes>
