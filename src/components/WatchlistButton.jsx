@@ -53,42 +53,49 @@ const handleSnapshot = async (item_id) => {
 };
 
 
-  const handleToggleWatchlist = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      onAuthRequired?.(); // If token missing, trigger login
-      return;
-    }
+const handleToggleWatchlist = async () => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    onAuthRequired?.();
+    return;
+  }
 
-    try {
-      if (isInWatchlist) {
-        // Remove from watchlist
-        await axios.delete(`http://localhost:5000/api/watchlist/${itemId}`, {
+  try {
+    if (isInWatchlist) {
+      // Remove from watchlist
+      await axios.delete(`http://localhost:5000/api/watchlist/${itemId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    } else {
+      // Add to watchlist
+      await axios.post(
+        'http://localhost:5000/api/watchlist',
+        { coin_id: itemId, item_type: itemType },
+        {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        });
-        setIsInWatchlist(false);
-      } else {
-        // Add to watchlist
-        await axios.post(
-          'http://localhost:5000/api/watchlist',
-          { coin_id: itemId, item_type: itemType },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setIsInWatchlist(true);
-      }
-    } catch (error) {
-      console.error('Error toggling watchlist:', error.response?.data || error.message);
-      if (error.response?.status === 401) {
-        onAuthRequired?.(); 
-      }
+        }
+      );
     }
-  };
+
+    // ✅ Re-fetch watchlist state after add/remove
+    const response = await axios.get('http://localhost:5000/api/watchlist', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const updatedWatchlist = response.data;
+    const exists = updatedWatchlist.some(item => item.item_id === itemId);
+    setIsInWatchlist(exists);
+
+  } catch (error) {
+    console.error('Error toggling watchlist:', error.response?.data || error.message);
+    if (error.response?.status === 401) {
+      onAuthRequired?.(); 
+    }
+  }
+};
+
 
   return (
     <>

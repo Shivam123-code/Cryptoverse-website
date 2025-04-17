@@ -52,18 +52,21 @@ const Watchlist = () => {
   const handleDelete = async (item_id) => {
     const token = localStorage.getItem('token');
     if (!token) return;
-
+  
     try {
       await axios.delete(`http://localhost:5000/api/watchlist/${item_id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
-      // Remove from UI
+  
+      // Update both states
       setCoinDetails(prev => prev.filter(coin => coin.id !== item_id));
+      setWatchlistItems(prev => prev.filter(item => item.item_id !== item_id));
     } catch (err) {
       console.error('Failed to delete:', err);
+      alert('Failed to delete from watchlist');
     }
   };
+  
 
   // 📸 Manual snapshot handler
   const handleManualSnapshot = async (coinId) => {

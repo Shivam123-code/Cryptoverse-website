@@ -83,7 +83,8 @@ router.get('/watchlist', authenticateToken, async (req, res) => {
 // Add item to watchlist
 router.post('/watchlist', authenticateToken, async (req, res) => {
     try {
-        const { userId } = req.user;
+      const userId = req.user.id;
+
         const {  coin_id, item_type } = req.body;
 if (! coin_id || !item_type) {
   return res.status(400).json({ message: 'Missing item_id or item_type' });

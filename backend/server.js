@@ -65,7 +65,7 @@ app.use('/api/posts', postsRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/snapshots', snapshotRoutes);
 app.use('/api/admin', adminRoutes);
-
+app.use('/api/watchlist', watchlistRoutes);
 
 // ✅ Register Route
 app.post('/register', async (req, res) => {
