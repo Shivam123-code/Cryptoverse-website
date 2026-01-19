@@ -52,7 +52,7 @@ const Coins = () => {
                 <h3 className="text-xl font-semibold">{coin.name}</h3>
                 <p className="text-gray-400 uppercase">{coin.symbol}</p>
               </div>
-              {coin.price_change_percentage_24h > 0 ? (
+              {(coin.price_change_percentage_24h ?? 0) > 0 ? (
                 <TrendingUp className="w-5 h-5 text-green-500" />
               ) : (
                 <TrendingDown className="w-5 h-5 text-red-500" />
@@ -66,7 +66,7 @@ const Coins = () => {
                       <Line
                         type="monotone"
                         dataKey="price"
-                        stroke={coin.price_change_percentage_24h > 0 ? '#10B981' : '#EF4444'}
+                        stroke={(coin.price_change_percentage_24h ?? 0) > 0 ? '#10B981' : '#EF4444'}
                         strokeWidth={2}
                         dot={false}
                       />
@@ -88,13 +88,12 @@ const Coins = () => {
                 <div>
                   <p className="text-sm text-gray-400">24h Change</p>
                   <p
-                    className={`text-lg font-semibold ${
-                      coin.price_change_percentage_24h > 0
+                    className={`text-lg font-semibold ${(coin.price_change_percentage_24h ?? 0) > 0
                         ? 'text-green-500'
                         : 'text-red-500'
-                    }`}
+                      }`}
                   >
-                    {coin.price_change_percentage_24h.toFixed(2)}%
+                    {(coin.price_change_percentage_24h ?? 0).toFixed(2)}%
                   </p>
                 </div>
               </div>

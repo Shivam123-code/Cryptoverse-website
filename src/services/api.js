@@ -1,8 +1,13 @@
 import axios from 'axios';
 
+const COINGECKO_API_KEY = 'CG-kx6GRWADZUa15FPCbAQQ86bj';
+
 const api = axios.create({
   baseURL: 'https://api.coingecko.com/api/v3',
   timeout: 10000,
+  params: {
+    x_cg_demo_api_key: COINGECKO_API_KEY
+  }
 });
 
 // Enhanced error handling for CoinGecko API
@@ -29,9 +34,9 @@ const retryWithDelay = async (fn, retries = 3, delayMs = 1000, backoff = 2) => {
     return await fn();
   } catch (error) {
     if (retries === 0) throw error;
-    
+
     const waitTime = error.message.includes('rate limit') ? delayMs * 2 : delayMs;
-    
+
     await delay(waitTime);
     return retryWithDelay(fn, retries - 1, waitTime * backoff, backoff);
   }
@@ -84,7 +89,7 @@ export const searchAll = async (query) => {
         api.get('/exchanges').then(res => res.data)
       ]);
 
-      const filteredExchanges = allExchanges.filter((exchange) => 
+      const filteredExchanges = allExchanges.filter((exchange) =>
         exchange.name.toLowerCase().includes(query.toLowerCase()) ||
         exchange.id.toLowerCase().includes(query.toLowerCase())
       );
