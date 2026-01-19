@@ -60,17 +60,23 @@ const Coins = () => {
             </div>
             <div className="mt-4">
               <div className="h-16">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={coin.sparkline_in_7d.price.map((price, index) => ({ price, index }))}>
-                    <Line
-                      type="monotone"
-                      dataKey="price"
-                      stroke={coin.price_change_percentage_24h > 0 ? '#10B981' : '#EF4444'}
-                      strokeWidth={2}
-                      dot={false}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
+                {coin.sparkline_in_7d?.price && coin.sparkline_in_7d.price.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={coin.sparkline_in_7d.price.map((price, index) => ({ price, index }))}>
+                      <Line
+                        type="monotone"
+                        dataKey="price"
+                        stroke={coin.price_change_percentage_24h > 0 ? '#10B981' : '#EF4444'}
+                        strokeWidth={2}
+                        dot={false}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="flex items-center justify-center h-full text-gray-500 text-sm">
+                    No chart data
+                  </div>
+                )}
               </div>
               <div className="grid grid-cols-2 gap-4 mt-4">
                 <div>
