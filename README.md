@@ -43,3 +43,5 @@ A full-stack cryptocurrency tracking platform built with React, Node.js, Express
 ```bash
 git clone https://github.com/your-username/cryptoverse.git
 cd cryptoverse
+
+npm run dev (frontend) and npm run server (backend) concurrently.
